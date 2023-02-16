@@ -5,11 +5,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gson.Gson;
 
-import com.kclient.ChattingClient;
+import com.kclient.ChattingClientK;
+import com.kserver.ConnectedSocket;
+
 import lombok.RequiredArgsConstructor;
+import dto.AddChattingRoomReqDto;
+import dto.AddChattingRoomRespDto;
 import dto.JoinRespDto;
 import dto.MessageRespDto;
 import dto.ResponseDto;
@@ -34,15 +40,19 @@ public class ClientRecive extends Thread {
 				switch(responseDto.getResource()) {
 					case "join":
 						JoinRespDto joinRespDto = gson.fromJson(responseDto.getBody(), JoinRespDto.class);
-						ChattingClient.getInstance().getContentView().append(joinRespDto.getWelcomeMessage() + "\n");
-						ChattingClient.getInstance().getUserListModel().clear();
-						ChattingClient.getInstance().getUserListModel().addElement("---전체---");
-						ChattingClient.getInstance().getUserListModel().addAll(joinRespDto.getConnectedUsers());
-						ChattingClient.getInstance().getUserList().setSelectedIndex(0);
+						ChattingClientK.getInstance().get .append(joinRespDto.getWelcomeMessage() + "\n");
+						ChattingClientK.getInstance().getUserListModel().clear();
+						ChattingClientK.getInstance().getUserListModel().addElement("---전체---");
+						ChattingClientK.getInstance().getUserListModel().addAll(joinRespDto.getConnectedUsers());
+						ChattingClientK.getInstance().getUserList().setSelectedIndex(0);
+						break;
+					case "addChatting": 
+						AddChattingRoomRespDto addChattingRoomRespDto = gson.fromJson(responseDto.getBody(), AddChattingRoomRespDto.class);
+						ChattingClientK.getInstance().getChattingList().add(addChattingRoomRespDto.getChattingRooms());
 						break;
 					case "sendMessage":
 						MessageRespDto messageRespDto = gson.fromJson(responseDto.getBody(), MessageRespDto.class);
-						ChattingClient.getInstance().getContentView().append(messageRespDto.getMessageValue() + "\n");
+						ChattingClientK.getInstance().getContentView().append(messageRespDto.getMessageValue() + "\n");
 				}
 			}
 		} catch (IOException e) {

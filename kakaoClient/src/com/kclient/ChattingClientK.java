@@ -32,10 +32,12 @@ import javax.swing.border.EmptyBorder;
 
 import com.google.gson.Gson;
 
+import dto.AddChattingRoomReqDto;
 import dto.JoinReqDto;
 import dto.RequestDto;
+import lombok.Getter;
 
-
+@Getter
 public class ChattingClientK extends JFrame {
 	private static ChattingClientK instance;
 	
@@ -49,6 +51,7 @@ public class ChattingClientK extends JFrame {
 	private Socket socket;
 	private Gson gson;
 	private String username;
+	private String chattingRoomName;
 
 	private JPanel mainPane;
 	private DefaultListModel<String> userListModel;
@@ -58,6 +61,7 @@ public class ChattingClientK extends JFrame {
 	private JPanel chattingListPane;
 	private JPanel chattingRoomPane;
 	private JLabel kakaoIcon2;
+	private JList chattingList;
 	private JTextField messageInput;
 
 	/**
@@ -95,12 +99,12 @@ public class ChattingClientK extends JFrame {
 		
 		loginPane = new JPanel();
 		loginPane.setBackground(new Color(255, 235, 59));
-		mainPane.add(loginPane, "name_7843377080600");
+		mainPane.add(loginPane, "login");
 		loginPane.setLayout(null);
 		
 		chattingListPane = new JPanel();
 		chattingListPane.setBackground(new Color(255, 235, 59));
-		mainPane.add(chattingListPane, "name_7846480972100");
+		mainPane.add(chattingListPane, "chattingList");
 		chattingListPane.setLayout(null);
 		
 		kakaoIcon2 = new JLabel("");
@@ -110,6 +114,38 @@ public class ChattingClientK extends JFrame {
 		chattingListPane.add(kakaoIcon2);
 		
 		JButton addChattingButton = new JButton("");
+		addChattingButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+		
+				try {
+
+					chattingRoomName = JOptionPane.showInputDialog(null, "방의 제목을 입력하시오.", "방 생성", JOptionPane.INFORMATION_MESSAGE);
+					ClientRecive clientRecive = new ClientRecive(socket);
+					clientRecive.start();
+					
+					
+					AddChattingRoomReqDto addChattingRoomReqDto = new AddChattingRoomReqDto(chattingRoomName);
+					String joinReqDtoJson = gson.toJson(joinReqDto);
+					RequestDto requestDto = new RequestDto("join", joinReqDtoJson);
+					String requestDtoJson = gson.toJson(requestDto);
+					
+					OutputStream outputStream = socket.getOutputStream();
+					PrintWriter out = new PrintWriter(outputStream, true);
+					out.println(requestDtoJson);
+								
+					
+					
+				} catch (UnknownHostException e1) {
+					e1.printStackTrace();
+					
+					
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+				
+			}
+		});
 		addChattingButton.setIcon(new ImageIcon("C:\\junil\\BC\\workspace\\-AWS-_Java_study_202212_jobc\\채팅방추가아이콘.png"));
 		addChattingButton.setBackground(new Color(240, 240, 240));
 		addChattingButton.setBounds(12, 116, 96, 96);
@@ -119,12 +155,12 @@ public class ChattingClientK extends JFrame {
 		chattingListScroll.setBounds(120, 0, 334, 751);
 		chattingListPane.add(chattingListScroll);
 		
-		JList chattingList = new JList();
+		chattingList = new JList();
 		chattingListScroll.setViewportView(chattingList);
 		
 		chattingRoomPane = new JPanel();
 		chattingRoomPane.setBackground(new Color(255, 235, 59));
-		mainPane.add(chattingRoomPane, "name_8130709658300");
+		mainPane.add(chattingRoomPane, "chattingRoom");
 		chattingRoomPane.setLayout(null);
 		
 		JLabel chattingRoomName = new JLabel("채팅방 :");
@@ -136,9 +172,16 @@ public class ChattingClientK extends JFrame {
 		chattingRoomPane.add(chattingRoomName);
 		
 		JButton exitButton = new JButton("New button");
+		exitButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
 		exitButton.setBackground(new Color(255, 235, 59));
-		exitButton.setIcon(new ImageIcon("C:\\junil\\BC\\workspace\\-AWS-_Java_study_202212_jobc\\나가기아이콘3.png"));
 		exitButton.setBounds(406, 25, 36, 42);
+		ImageIcon iconExit = new ImageIcon("C:\\junil\\BC\\workspace\\-AWS-_Java_study_202212_jobc\\나가기아이콘3.png");
+		Image scaledImageExit = iconExit.getImage().getScaledInstance(36, 42, Image.SCALE_DEFAULT);
+		ImageIcon scaledIconExit = new ImageIcon(scaledImageExit);
+		exitButton.setIcon(scaledIconExit);
 		chattingRoomPane.add(exitButton);
 		
 		JScrollPane chattingScroll = new JScrollPane();
@@ -169,7 +212,13 @@ public class ChattingClientK extends JFrame {
 		loginPane.add(nameInput);
 		nameInput.setColumns(10);
 		
+		
+		//로그인 버튼으로 로그인하기.
+		//ip, port입력부분이 없어서 고정값
+		//사용자이름 nameInput에서 받아와서 Gson으로 소켓에 저장
+		//CardLayout으로 로그인 성공하면 chattinglistPane으로 넘어가게 설정
 		JButton connectButton = new JButton("");
+		connectButton.setIcon(new ImageIcon("C:\\junil\\BC\\workspace\\-AWS-_Java_study_202212_jobc\\카톡로그인.png"));
 		connectButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -205,6 +254,9 @@ public class ChattingClientK extends JFrame {
 					PrintWriter out = new PrintWriter(outputStream, true);
 					out.println(requestDtoJson);
 					
+					CardLayout layout = (CardLayout) mainPane.getLayout();
+			        layout.show(mainPane, "chattingList");
+					
 					
 					
 				} catch (UnknownHostException e1) {
@@ -222,15 +274,17 @@ public class ChattingClientK extends JFrame {
 				
 			}
 		});
+		//로그인버튼 이미지 사이즈 변경
 		connectButton.setBounds(81, 551, 285, 40);
-		ImageIcon icon = new ImageIcon("C:\\junil\\BC\\workspace\\-AWS-_Java_study_202212_jobc\\카톡로그인.png");
-		Image scaledImage = icon.getImage().getScaledInstance(285, 40, Image.SCALE_DEFAULT);
-		ImageIcon scaledIcon = new ImageIcon(scaledImage);
-		connectButton.setIcon(scaledIcon);
+		ImageIcon iconLogin = new ImageIcon("C:\\junil\\BC\\workspace\\-AWS-_Java_study_202212_jobc\\카톡로그인4.png");
+		Image scaledImageLogin = iconLogin.getImage().getScaledInstance(285, 40, Image.SCALE_DEFAULT);
+		ImageIcon scaledIconLogin = new ImageIcon(scaledImageLogin);
+		connectButton.setIcon(scaledIconLogin);
 		connectButton.setSelectedIcon(null);
 		connectButton.setBackground(new Color(255, 235, 59));
 		connectButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
 				
 			
 			}

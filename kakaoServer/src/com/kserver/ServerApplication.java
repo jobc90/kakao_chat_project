@@ -8,21 +8,20 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketOption;
-import java.net.SocketOptions;
-import java.net.StandardSocketOptions;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
 
-import lombok.Data;
+import dto.AddChattingRoomReqDto;
+import dto.AddChattingRoomRespDto;
 import dto.JoinReqDto;
 import dto.JoinRespDto;
 import dto.MessageReqDto;
 import dto.MessageRespDto;
 import dto.RequestDto;
 import dto.ResponseDto;
+import lombok.Data;
 
 @Data
 class ConnectedSocket extends Thread {
@@ -33,6 +32,7 @@ class ConnectedSocket extends Thread {
 	private Gson gson;
 	
 	private String username;
+	private String chattingRoomName;
 	
 	public ConnectedSocket(Socket socket) {
 		this.socket = socket;
@@ -63,6 +63,20 @@ class ConnectedSocket extends Thread {
 						JoinRespDto joinRespDto = new JoinRespDto(username + "님이 접속하였습니다.", connectedUsers);
 			
 						sendToAll(requestDto.getResource(), "ok", gson.toJson(joinRespDto));
+						break;
+						
+					case "addChatting": 
+						AddChattingRoomReqDto addChattingRoomReqDto = gson.fromJson(requestDto.getBody(), AddChattingRoomReqDto.class);
+						chattingRoomName = addChattingRoomReqDto.getChattingRoomName();
+						List<String> chattingRooms = new ArrayList<>();
+						
+						for(ConnectedSocket connectedSocket : socketList) {
+							chattingRooms.add(connectedSocket.getChattingRoomName());
+						}
+
+						AddChattingRoomRespDto addchChattingRoomRespDto = new AddChattingRoomRespDto(chattingRoomName + "이 생성되었습니다.", chattingRooms);
+						sendToAll(requestDto.getResource(), "ok", gson.toJson(addchChattingRoomRespDto));
+						
 						break;
 					case "sendMessage":
 						MessageReqDto messageReqDto = gson.fromJson(requestDto.getBody(), MessageReqDto.class);
