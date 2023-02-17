@@ -1,4 +1,4 @@
-package dto;
+package com.kserver.dto;
 
 import java.util.List;
 
@@ -7,9 +7,8 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-
-public class AddChattingRoomRespDto {
+public class JoinRespDto {
 	private String welcomeMessage;
-	private List<String> chattingRooms;
+	private List<String> connectedUsers;
 
 }

@@ -1,4 +1,4 @@
-package dto;
+package com.kclient.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

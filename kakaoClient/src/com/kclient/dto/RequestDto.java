@@ -1,13 +1,12 @@
-package dto;
+package com.kclient.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class ResponseDto {
+public class RequestDto {
 	private String resource;
-	private String status;
 	private String body;
 
 }

@@ -1,4 +1,4 @@
-package dto;
+package com.kclient.dto;
 
 import java.util.List;
 

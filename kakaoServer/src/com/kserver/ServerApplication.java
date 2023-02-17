@@ -12,15 +12,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.Gson;
+import com.kserver.dto.AddChattingRoomReqDto;
+import com.kserver.dto.AddChattingRoomRespDto;
+import com.kserver.dto.JoinReqDto;
+import com.kserver.dto.JoinRespDto;
+import com.kserver.dto.MessageReqDto;
+import com.kserver.dto.MessageRespDto;
+import com.kserver.dto.RequestDto;
+import com.kserver.dto.ResponseDto;
 
-import dto.AddChattingRoomReqDto;
-import dto.AddChattingRoomRespDto;
-import dto.JoinReqDto;
-import dto.JoinRespDto;
-import dto.MessageReqDto;
-import dto.MessageRespDto;
-import dto.RequestDto;
-import dto.ResponseDto;
 import lombok.Data;
 
 @Data
@@ -45,6 +45,8 @@ class ConnectedSocket extends Thread {
 		try {
 			inputStream = socket.getInputStream();
 			BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+			List<String> chattingRooms = new ArrayList<>();
+			
 			
 			while(true) {
 				String request = in.readLine();	// requestDto(JSON)
@@ -68,16 +70,19 @@ class ConnectedSocket extends Thread {
 					case "addChatting": 
 						AddChattingRoomReqDto addChattingRoomReqDto = gson.fromJson(requestDto.getBody(), AddChattingRoomReqDto.class);
 						chattingRoomName = addChattingRoomReqDto.getChattingRoomName();
-						List<String> chattingRooms = new ArrayList<>();
 						
-						for(ConnectedSocket connectedSocket : socketList) {
-							chattingRooms.add(connectedSocket.getChattingRoomName());
-						}
+						chattingRooms.add(chattingRoomName);
+						
+						
+//						for(ConnectedSocket connectedSocket : socketList) {
+//							chattingRooms.add(connectedSocket.getChattingRoomName());
+//						}
 
-						AddChattingRoomRespDto addchChattingRoomRespDto = new AddChattingRoomRespDto(chattingRoomName + "이 생성되었습니다.", chattingRooms);
+						AddChattingRoomRespDto addchChattingRoomRespDto = new AddChattingRoomRespDto(chattingRooms);
 						sendToAll(requestDto.getResource(), "ok", gson.toJson(addchChattingRoomRespDto));
 						
 						break;
+						
 					case "sendMessage":
 						MessageReqDto messageReqDto = gson.fromJson(requestDto.getBody(), MessageReqDto.class);
 						

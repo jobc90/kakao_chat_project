@@ -1,4 +1,4 @@
-package dto;
+package com.kclient.dto;
 
 import java.util.List;
 
@@ -9,7 +9,6 @@ import lombok.Data;
 @Data
 
 public class AddChattingRoomRespDto {
-	private String welcomeMessage;
 	private List<String> chattingRooms;
 
 }

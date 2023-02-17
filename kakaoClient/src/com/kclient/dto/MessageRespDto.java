@@ -1,13 +1,11 @@
-package dto;
+package com.kclient.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class MessageReqDto {
-	private String toUser;
-	private String fromUser;
+public class MessageRespDto {
 	private String messageValue;
 
 }
