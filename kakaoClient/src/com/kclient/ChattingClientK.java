@@ -163,8 +163,6 @@ public class ChattingClientK extends JFrame {
 					PrintWriter out = new PrintWriter(outputStream, true);
 					out.println(requestDtoJson);
 					
-					CardLayout layout = (CardLayout) mainPane.getLayout();
-			        layout.show(mainPane, "chattingList");
 					
 					
 					
@@ -185,7 +183,6 @@ public class ChattingClientK extends JFrame {
 		});
 		//로그인버튼 이미지 사이즈 변경
 		connectButton.setBounds(81, 551, 285, 40);
-		ImageIcon scaledIconLogin = new ImageIcon("C:\\junil\\BC\\workspace\\-AWS-_Java_study_202212_jobc\\카톡로그인4.png");
 		connectButton.setIcon(new ImageIcon(ChattingClientK.class.getResource("/com/kclient/images/카톡로그인5.jpg")));
 		connectButton.setSelectedIcon(null);
 		connectButton.setBackground(new Color(255, 235, 59));
@@ -241,8 +238,6 @@ public class ChattingClientK extends JFrame {
 
 				sendRequest("addChatting", gson.toJson(addChattingRoomReqDto));
 				
-				
-				showChattingRoom(chattingRoomName);
 			}
 		});
 		
@@ -271,8 +266,7 @@ public class ChattingClientK extends JFrame {
 					
 					sendRequest("joinChatting", gson.toJson(joinChattingReqDto));
 					
-					CardLayout layout = (CardLayout) mainPane.getLayout();
-					layout.show(mainPane, "chattingRoom");
+
 				}
 			}
 		});
@@ -305,11 +299,9 @@ public class ChattingClientK extends JFrame {
 				layout.show(mainPane, "chattingListPane");
 			}
 		});
+		
 		exitButton.setBackground(new Color(255, 235, 59));
 		exitButton.setBounds(406, 25, 36, 42);
-		ImageIcon iconExit = new ImageIcon("C:\\junil\\BC\\workspace\\-AWS-_Java_study_202212_jobc\\나가기아이콘3.png");
-		Image scaledImageExit = iconExit.getImage().getScaledInstance(36, 42, Image.SCALE_DEFAULT);
-		ImageIcon scaledIconExit = new ImageIcon(scaledImageExit);
 		exitButton.setIcon(new ImageIcon(ChattingClientK.class.getResource("/com/kclient/images/나가기아이콘2.png")));
 		chattingRoomPane.add(exitButton);
 		
@@ -354,15 +346,7 @@ public class ChattingClientK extends JFrame {
 		
 	}
 	
-	//생성된 채팅 룸으로 들어가는 메소드
-	private void showChattingRoom(String roomName) {
-		
-		JPanel chattingPanel = new JPanel();
-		
-		CardLayout layout = (CardLayout) mainPane.getLayout();
-		mainPane.add(chattingRoomPane,"chattingRoomPane");
-		layout.show(mainPane, "chattingRoomPane");
-	}
+	
 	
 	private void sendRequest(String resource, String body) {
 		OutputStream outputStream;
