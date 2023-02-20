@@ -4,7 +4,6 @@ import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
@@ -43,6 +42,7 @@ import com.kclient.dto.RequestDto;
 
 import lombok.Getter;
 
+
 @Getter
 public class ChattingClientK extends JFrame {
 	private static ChattingClientK instance;
@@ -60,6 +60,7 @@ public class ChattingClientK extends JFrame {
 	private String chattingRoomName;
 
 	private JPanel mainPane;
+	private JList<String> userList;
 	private DefaultListModel<String> userListModel;
 	private DefaultListModel<String> chattingListModel;
 	private JTextField nameInput;
@@ -71,7 +72,9 @@ public class ChattingClientK extends JFrame {
 	private JList chattingList;
 	private JTextField messageInput;
 	private JTextArea chattingView;
-	
+
+	@Getter
+	private static CardLayout mainCard;
 
 	/**
 	 * Launch the application.
@@ -107,7 +110,10 @@ public class ChattingClientK extends JFrame {
 		mainPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
 		setContentPane(mainPane);
-		mainPane.setLayout(new CardLayout(0, 0));
+		mainCard = new CardLayout();
+		mainPane.setLayout(mainCard);
+		mainCard.show(mainPane, "loginPane");
+		
 		
 		loginPane = new JPanel();
 		loginPane.setBackground(new Color(255, 235, 59));
@@ -121,7 +127,9 @@ public class ChattingClientK extends JFrame {
 		loginPane.add(nameInput);
 		nameInput.setColumns(10);
 		
+		
 		userListModel = new DefaultListModel<>();
+		userList = new JList<String>(userListModel);
 		//로그인 버튼으로 로그인하기.
 		//ip, port입력부분이 없어서 고정값
 		//사용자이름 nameInput에서 받아와서 Gson으로 소켓에 저장
@@ -291,12 +299,15 @@ public class ChattingClientK extends JFrame {
 		
 		//채팅방에서 방 목록으로 나가는 버튼
 		JButton exitButton = new JButton("");
+		//채팅방에서 방 목록으로 나가는 버튼
 		exitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-	
+
+				
 				CardLayout layout = (CardLayout) mainPane.getLayout();
-				mainPane.add(chattingListPane,"chattingListPane");
-				layout.show(mainPane, "chattingListPane");
+		        layout.show(mainPane, "chattingList");
+
+
 			}
 		});
 		
@@ -304,6 +315,7 @@ public class ChattingClientK extends JFrame {
 		exitButton.setBounds(406, 25, 36, 42);
 		exitButton.setIcon(new ImageIcon(ChattingClientK.class.getResource("/com/kclient/images/나가기아이콘2.png")));
 		chattingRoomPane.add(exitButton);
+		
 		
 		JScrollPane chattingScroll = new JScrollPane();
 		chattingScroll.setBounds(12, 98, 430, 545);
@@ -320,33 +332,44 @@ public class ChattingClientK extends JFrame {
 		// 채팅 보내기 
 		messageInput = new JTextField();
 		messageInput.addKeyListener(new KeyAdapter() {
+
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) { //키보드 누르는값 선택
 					sendMessage();
+					
 				}
+			
+
+				
 			}
 		});
+		
 		messageScroll.setViewportView(messageInput);
-		messageInput.setColumns(10);
+
 		
 		JButton sendButton = new JButton("");
 		sendButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+
+				sendMessage();
 				
-			sendMessage();
+
 			}
 		});
 		sendButton.setBackground(new Color(255, 235, 59));
 		sendButton.setIcon(new ImageIcon(ChattingClientK.class.getResource("/com/kclient/images/전송아이콘7.png")));
 		sendButton.setBounds(381, 653, 73, 88);
+		
 		chattingRoomPane.add(sendButton);
 		
 		
 	}
 	
-	
+
+		
+
 	
 	private void sendRequest(String resource, String body) {
 		OutputStream outputStream;
@@ -363,16 +386,22 @@ public class ChattingClientK extends JFrame {
 		}
 	}
 	
-	//메세지 전송 메소드
+
 	private void sendMessage() {
-	    if (!messageInput.getText().isBlank()) {
-	        MessageReqDto messageReqDto = new MessageReqDto(chattingRoomName, messageInput.getText());
-	        sendRequest("sendMessage", gson.toJson(messageReqDto));
-	        messageInput.setText("");
-	    }
+		if(!messageInput.getText().isBlank()) {
+			
+			String toUser = "all";
+			
+			
+			MessageReqDto messageReqDto = 
+					new MessageReqDto(toUser, username, messageInput.getText());
+				
+			sendRequest("sendMessage", gson.toJson(messageReqDto));
+			messageInput.setText("");
+			
 			
 		}
-	
-
 	}
+	
+}
 

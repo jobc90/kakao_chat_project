@@ -29,9 +29,12 @@ public class ClientRecive extends Thread {
 			inputStream = socket.getInputStream();
 			BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
 			gson = new Gson();
-			CardLayout layout = (CardLayout) ChattingClientK.getInstance().getLayout();
+			CardLayout layout = ChattingClientK.getInstance().getMainCard();
+			
+			
 			
 			while(true) {
+				
 				String request = in.readLine();
 				ResponseDto responseDto = gson.fromJson(request, ResponseDto.class);
 				switch(responseDto.getResource()) {
@@ -41,7 +44,9 @@ public class ClientRecive extends Thread {
 						ChattingClientK.getInstance().getUserListModel().addElement("---전체---");
 						ChattingClientK.getInstance().getUserListModel().addAll(joinRespDto.getConnectedUsers());
 						
-				        layout.show(ChattingClientK.getInstance(), "chattingList");
+						
+						layout.show(ChattingClientK.getInstance().getMainPane(), "chattingList");
+						
 						
 						break;
 					case "addChatting": 
@@ -54,7 +59,8 @@ public class ClientRecive extends Thread {
 					case "joinChatting": 
 						JoinChattingRespDto joinChattingRespDto = gson.fromJson(responseDto.getBody(), JoinChattingRespDto.class);
 						
-						layout.show(ChattingClientK.getInstance(), "chattingRoom");
+						layout.show(ChattingClientK.getInstance().getMainPane(), "chattingRoom");
+
 						break;
 						
 					case "sendMessage":
