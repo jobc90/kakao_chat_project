@@ -23,6 +23,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -70,8 +72,10 @@ public class ChattingClientK extends JFrame {
 	private JList chattingList;
 	private JTextField messageInput;
 	private JTextArea chattingView;
+
 	@Getter
 	private static CardLayout mainCard;
+
 	/**
 	 * Launch the application.
 	 */
@@ -149,6 +153,7 @@ public class ChattingClientK extends JFrame {
 							username + "님 환영합니다.", 
 							"접속성공", 
 							JOptionPane.INFORMATION_MESSAGE);
+			
 					
 					connectButton.setEnabled(false);
 					connectButton.removeMouseListener(this);
@@ -186,7 +191,6 @@ public class ChattingClientK extends JFrame {
 		});
 		//로그인버튼 이미지 사이즈 변경
 		connectButton.setBounds(81, 551, 285, 40);
-		ImageIcon scaledIconLogin = new ImageIcon("C:\\junil\\BC\\workspace\\-AWS-_Java_study_202212_jobc\\카톡로그인4.png");
 		connectButton.setIcon(new ImageIcon(ChattingClientK.class.getResource("/com/kclient/images/카톡로그인5.jpg")));
 		connectButton.setSelectedIcon(null);
 		connectButton.setBackground(new Color(255, 235, 59));
@@ -244,6 +248,8 @@ public class ChattingClientK extends JFrame {
 				
 			}
 		});
+		
+		
 		addChattingButton.setIcon(new ImageIcon(ChattingClientK.class.getResource("/com/kclient/images/채팅방추가아이콘.png")));
 		addChattingButton.setBackground(new Color(240, 240, 240));
 		addChattingButton.setBounds(12, 116, 96, 96);
@@ -272,6 +278,7 @@ public class ChattingClientK extends JFrame {
 				}
 			}
 		});
+
 		chattingListScroll.setViewportView(chattingList);
 		
 		
@@ -290,16 +297,20 @@ public class ChattingClientK extends JFrame {
 		chattingRoomName.setBounds(0, 0, 394, 88);
 		chattingRoomPane.add(chattingRoomName);
 		
+		//채팅방에서 방 목록으로 나가는 버튼
 		JButton exitButton = new JButton("");
 		//채팅방에서 방 목록으로 나가는 버튼
 		exitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+
 				
 				CardLayout layout = (CardLayout) mainPane.getLayout();
 		        layout.show(mainPane, "chattingList");
 
+
 			}
 		});
+		
 		exitButton.setBackground(new Color(255, 235, 59));
 		exitButton.setBounds(406, 25, 36, 42);
 		exitButton.setIcon(new ImageIcon(ChattingClientK.class.getResource("/com/kclient/images/나가기아이콘2.png")));
@@ -317,9 +328,11 @@ public class ChattingClientK extends JFrame {
 		messageScroll.setBounds(12, 653, 367, 88);
 		chattingRoomPane.add(messageScroll);
 		
+		
+		// 채팅 보내기 
 		messageInput = new JTextField();
 		messageInput.addKeyListener(new KeyAdapter() {
-			
+
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_ENTER) { //키보드 누르는값 선택
@@ -339,8 +352,10 @@ public class ChattingClientK extends JFrame {
 		sendButton.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+
 				sendMessage();
 				
+
 			}
 		});
 		sendButton.setBackground(new Color(255, 235, 59));
@@ -352,7 +367,9 @@ public class ChattingClientK extends JFrame {
 		
 	}
 	
+
 		
+
 	
 	private void sendRequest(String resource, String body) {
 		OutputStream outputStream;
@@ -369,6 +386,7 @@ public class ChattingClientK extends JFrame {
 		}
 	}
 	
+
 	private void sendMessage() {
 		if(!messageInput.getText().isBlank()) {
 			
@@ -386,3 +404,4 @@ public class ChattingClientK extends JFrame {
 	}
 	
 }
+

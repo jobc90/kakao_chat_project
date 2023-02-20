@@ -60,6 +60,7 @@ public class ClientRecive extends Thread {
 						JoinChattingRespDto joinChattingRespDto = gson.fromJson(responseDto.getBody(), JoinChattingRespDto.class);
 						
 						layout.show(ChattingClientK.getInstance().getMainPane(), "chattingRoom");
+
 						break;
 						
 					case "sendMessage":
