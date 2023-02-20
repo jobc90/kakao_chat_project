@@ -7,6 +7,8 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -22,6 +24,8 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -32,7 +36,9 @@ import javax.swing.border.EmptyBorder;
 
 import com.google.gson.Gson;
 import com.kclient.dto.AddChattingRoomReqDto;
+import com.kclient.dto.AddChattingRoomRespDto;
 import com.kclient.dto.JoinReqDto;
+import com.kclient.dto.MessageReqDto;
 import com.kclient.dto.RequestDto;
 
 import lombok.Getter;
@@ -65,6 +71,7 @@ public class ChattingClientK extends JFrame {
 	private JList chattingList;
 	private JTextField messageInput;
 	private JTextArea chattingView;
+	
 
 	/**
 	 * Launch the application.
@@ -138,6 +145,7 @@ public class ChattingClientK extends JFrame {
 							username + "님 환영합니다.", 
 							"접속성공", 
 							JOptionPane.INFORMATION_MESSAGE);
+			
 					
 					connectButton.setEnabled(false);
 					connectButton.removeMouseListener(this);
@@ -233,8 +241,12 @@ public class ChattingClientK extends JFrame {
 
 				sendRequest("addChatting", gson.toJson(addChattingRoomReqDto));
 				
+				
+				showChattingRoom(chattingRoomName);
 			}
 		});
+		
+		
 		addChattingButton.setIcon(new ImageIcon(ChattingClientK.class.getResource("/com/kclient/images/채팅방추가아이콘.png")));
 		addChattingButton.setBackground(new Color(240, 240, 240));
 		addChattingButton.setBounds(12, 116, 96, 96);
@@ -246,6 +258,7 @@ public class ChattingClientK extends JFrame {
 
 		chattingListModel = new DefaultListModel<>();
 		chattingList = new JList<String>(chattingListModel);
+
 		chattingListScroll.setViewportView(chattingList);
 		
 		
@@ -263,9 +276,14 @@ public class ChattingClientK extends JFrame {
 		chattingRoomName.setBounds(0, 0, 394, 88);
 		chattingRoomPane.add(chattingRoomName);
 		
+		//채팅방에서 방 목록으로 나가는 버튼
 		JButton exitButton = new JButton("");
 		exitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+	
+				CardLayout layout = (CardLayout) mainPane.getLayout();
+				mainPane.add(chattingListPane,"chattingListPane");
+				layout.show(mainPane, "chattingListPane");
 			}
 		});
 		exitButton.setBackground(new Color(255, 235, 59));
@@ -287,11 +305,28 @@ public class ChattingClientK extends JFrame {
 		messageScroll.setBounds(12, 653, 367, 88);
 		chattingRoomPane.add(messageScroll);
 		
+		
+		// 채팅 보내기 
 		messageInput = new JTextField();
+		messageInput.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER) {
+					sendMessage();
+				}
+			}
+		});
 		messageScroll.setViewportView(messageInput);
 		messageInput.setColumns(10);
 		
 		JButton sendButton = new JButton("");
+		sendButton.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+			sendMessage();
+			}
+		});
 		sendButton.setBackground(new Color(255, 235, 59));
 		sendButton.setIcon(new ImageIcon(ChattingClientK.class.getResource("/com/kclient/images/전송아이콘7.png")));
 		sendButton.setBounds(381, 653, 73, 88);
@@ -299,7 +334,16 @@ public class ChattingClientK extends JFrame {
 		
 		
 	}
+	
+	//생성된 채팅 룸으로 들어가는 메소드
+	private void showChattingRoom(String roomName) {
 		
+		JPanel chattingPanel = new JPanel();
+		
+		CardLayout layout = (CardLayout) mainPane.getLayout();
+		mainPane.add(chattingRoomPane,"chattingRoomPane");
+		layout.show(mainPane, "chattingRoomPane");
+	}
 	
 	private void sendRequest(String resource, String body) {
 		OutputStream outputStream;
@@ -316,4 +360,16 @@ public class ChattingClientK extends JFrame {
 		}
 	}
 	
-}
+	//메세지 전송 메소드
+	private void sendMessage() {
+	    if (!messageInput.getText().isBlank()) {
+	        MessageReqDto messageReqDto = new MessageReqDto(chattingRoomName, messageInput.getText());
+	        sendRequest("sendMessage", gson.toJson(messageReqDto));
+	        messageInput.setText("");
+	    }
+			
+		}
+	
+
+	}
+

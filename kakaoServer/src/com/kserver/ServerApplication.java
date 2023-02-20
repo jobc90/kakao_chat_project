@@ -30,16 +30,16 @@ class ConnectedSocket extends Thread {
 	private InputStream inputStream;
 	private OutputStream outputStream;
 	private Gson gson;
-	
+
 	private String username;
 	private String chattingRoomName;
-	
+
 	public ConnectedSocket(Socket socket) {
 		this.socket = socket;
 		gson = new Gson();
 		socketList.add(this);
 	}
-	
+
 	@Override
 	public void run() {
 		try {
@@ -83,6 +83,8 @@ class ConnectedSocket extends Thread {
 						
 						break;
 						
+						
+						
 					case "sendMessage":
 						MessageReqDto messageReqDto = gson.fromJson(requestDto.getBody(), MessageReqDto.class);
 						
@@ -104,62 +106,61 @@ class ConnectedSocket extends Thread {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void sendToAll(String resource, String status, String body) throws IOException {
 		ResponseDto responseDto = new ResponseDto(resource, status, body);
-		for(ConnectedSocket connectedSocket : socketList) {
+		for (ConnectedSocket connectedSocket : socketList) {
 			OutputStream outputStream = connectedSocket.getSocket().getOutputStream();
 			PrintWriter out = new PrintWriter(outputStream, true);
-			
+
 			out.println(gson.toJson(responseDto));
 		}
 	}
-	
+
 	private void sendToUser(String resource, String status, String body, String toUser) throws IOException {
-		ResponseDto responseDto = new ResponseDto(resource, status, body);		
-		for(ConnectedSocket connectedSocket : socketList) {
-			if(connectedSocket.getUsername().equals(toUser) || connectedSocket.getUsername().equals(username)) {
+		ResponseDto responseDto = new ResponseDto(resource, status, body);
+		for (ConnectedSocket connectedSocket : socketList) {
+			if (connectedSocket.getUsername().equals(toUser) || connectedSocket.getUsername().equals(username)) {
 				OutputStream outputStream = connectedSocket.getSocket().getOutputStream();
 				PrintWriter out = new PrintWriter(outputStream, true);
-				
+
 				out.println(gson.toJson(responseDto));
 			}
 		}
 	}
-	
-}
 
+}
 
 public class ServerApplication {
 
 	public static void main(String[] args) {
 		ServerSocket serverSocket = null;
-		
+
 		try {
 			serverSocket = new ServerSocket(9090);
 			System.out.println("=====<<< 서버 실행 >>>=====");
-			
-			while(true) {
-				Socket socket = serverSocket.accept();	// 클라이언트의 접속을 기다리는 녀석
+
+			while (true) {
+				Socket socket = serverSocket.accept(); // 클라이언트의 접속을 기다리는 녀석
 				ConnectedSocket connectedSocket = new ConnectedSocket(socket);
 				connectedSocket.start();
 			}
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
-			
+
 		} finally {
-			if(serverSocket != null) {
+			if (serverSocket != null) {
 				try {
 					serverSocket.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			}
-			
+
 			System.out.println("=====<<< 서버 종료 >>>=====");
 		}
-		
+
 	}
-	
+
 }
