@@ -14,6 +14,8 @@ import java.util.List;
 import com.google.gson.Gson;
 import com.kserver.dto.AddChattingRoomReqDto;
 import com.kserver.dto.AddChattingRoomRespDto;
+import com.kserver.dto.JoinChattingReqDto;
+import com.kserver.dto.JoinChattingRespDto;
 import com.kserver.dto.JoinReqDto;
 import com.kserver.dto.JoinRespDto;
 import com.kserver.dto.MessageReqDto;
@@ -26,6 +28,7 @@ import lombok.Data;
 @Data
 class ConnectedSocket extends Thread {
 	private static List<ConnectedSocket> socketList = new ArrayList<>();
+	private static List<String> chattingRooms = new ArrayList<>();
 	private Socket socket;
 	private InputStream inputStream;
 	private OutputStream outputStream;
@@ -33,6 +36,8 @@ class ConnectedSocket extends Thread {
 	
 	private String username;
 	private String chattingRoomName;
+	private int chattingRoomNum;
+	
 	
 	public ConnectedSocket(Socket socket) {
 		this.socket = socket;
@@ -45,7 +50,7 @@ class ConnectedSocket extends Thread {
 		try {
 			inputStream = socket.getInputStream();
 			BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
-			List<String> chattingRooms = new ArrayList<>();
+			
 			
 			
 			while(true) {
@@ -72,14 +77,18 @@ class ConnectedSocket extends Thread {
 						chattingRoomName = addChattingRoomReqDto.getChattingRoomName();
 						
 						chattingRooms.add(chattingRoomName);
-						
-						
-//						for(ConnectedSocket connectedSocket : socketList) {
-//							chattingRooms.add(connectedSocket.getChattingRoomName());
-//						}
 
 						AddChattingRoomRespDto addchChattingRoomRespDto = new AddChattingRoomRespDto(chattingRooms);
 						sendToAll(requestDto.getResource(), "ok", gson.toJson(addchChattingRoomRespDto));
+						
+						break;
+						
+					case "joinChatting": 
+						JoinChattingReqDto joinChattingReqDto = gson.fromJson(requestDto.getBody(), JoinChattingReqDto.class);
+						chattingRoomNum = joinChattingReqDto.getChattingRoomNum();
+						
+						JoinChattingRespDto joinChattingRespDto = new JoinChattingRespDto(chattingRoomNum, "채팅방에 입장하셨습니다.");
+						sendToUser(requestDto.getResource(), "ok", gson.toJson(joinChattingRespDto), joinChattingReqDto.getFromUser());
 						
 						break;
 						

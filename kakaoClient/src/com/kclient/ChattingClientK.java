@@ -32,6 +32,7 @@ import javax.swing.border.EmptyBorder;
 
 import com.google.gson.Gson;
 import com.kclient.dto.AddChattingRoomReqDto;
+import com.kclient.dto.JoinChattingReqDto;
 import com.kclient.dto.JoinReqDto;
 import com.kclient.dto.RequestDto;
 
@@ -221,7 +222,7 @@ public class ChattingClientK extends JFrame {
 		chattingListPane.add(kakaoIcon2);
 		
 		
-		
+		//채팅방 생성
 		JButton addChattingButton = new JButton("");
 		addChattingButton.addMouseListener(new MouseAdapter() {
 			@Override
@@ -246,7 +247,26 @@ public class ChattingClientK extends JFrame {
 
 		chattingListModel = new DefaultListModel<>();
 		chattingList = new JList<String>(chattingListModel);
+		
+		//채팅방 선택해서 입장
+		chattingList.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount()==2) {
+					
+					int chattingRoomNum = chattingList.getSelectedIndex();
+					JoinChattingReqDto joinChattingReqDto =
+							new JoinChattingReqDto(chattingRoomNum, username);
+					
+					sendRequest("joinChatting", gson.toJson(joinChattingReqDto));
+					
+					CardLayout layout = (CardLayout) mainPane.getLayout();
+					layout.show(mainPane, "chattingRoom");
+				}
+			}
+		});
 		chattingListScroll.setViewportView(chattingList);
+		
 		
 		
 		
