@@ -11,6 +11,6 @@ import lombok.Data;
 @Data
 
 public class AddChattingRoomRespDto {
-	private List<Room> chattingRooms;
+	private List<String> roomNames;
 
 }

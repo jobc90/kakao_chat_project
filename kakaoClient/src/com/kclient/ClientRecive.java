@@ -39,27 +39,26 @@ public class ClientRecive extends Thread {
 				ResponseDto responseDto = gson.fromJson(request, ResponseDto.class);
 				switch(responseDto.getResource()) {
 					case "join":
-						JoinRespDto joinRespDto = gson.fromJson(responseDto.getBody(), JoinRespDto.class);
-						ChattingClientK.getInstance().getUserListModel().clear();
-						ChattingClientK.getInstance().getUserListModel().addElement("---전체---");
-						ChattingClientK.getInstance().getUserListModel().addAll(joinRespDto.getConnectedUsers());
-						
-						
 						layout.show(ChattingClientK.getInstance().getMainPane(), "chattingList");
-						
+						JoinRespDto joinRespDto = gson.fromJson(responseDto.getBody(), JoinRespDto.class);
+						ChattingClientK.getInstance().getChattingListModel().clear();
+						ChattingClientK.getInstance().getChattingListModel().addElement("---<<<채팅방 목록>>>---");
+						ChattingClientK.getInstance().getChattingListModel().addAll(joinRespDto.getRoomNames());
 						
 						break;
 					case "addChatting": 
 						AddChattingRoomRespDto addChattingRoomRespDto = gson.fromJson(responseDto.getBody(), AddChattingRoomRespDto.class);
 						ChattingClientK.getInstance().getChattingListModel().clear();
 						ChattingClientK.getInstance().getChattingListModel().addElement("---<<<채팅방 목록>>>---");
-						ChattingClientK.getInstance().getChattingListModel().addAll(addChattingRoomRespDto.getChattingRooms());
+						ChattingClientK.getInstance().getChattingListModel().addAll(addChattingRoomRespDto.getRoomNames());
 						break;
 						
 					case "joinChatting": 
 						JoinChattingRespDto joinChattingRespDto = gson.fromJson(responseDto.getBody(), JoinChattingRespDto.class);
-						
 						layout.show(ChattingClientK.getInstance().getMainPane(), "chattingRoom");
+						ChattingClientK.getInstance().getRoomLabel().setText("채팅방 :" + joinChattingRespDto.getRoomName() +", 방장: " + joinChattingRespDto.getRoomKing());
+						ChattingClientK.getInstance().getChattingView().setText(null);
+						ChattingClientK.getInstance().getChattingView().append(joinChattingRespDto.getWelcomeMessage() + "\n");
 
 						break;
 						
