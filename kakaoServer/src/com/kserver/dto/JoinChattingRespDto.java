@@ -7,7 +7,8 @@ import lombok.Data;
 @Data
 
 public class JoinChattingRespDto {
-	private int chattingRoomNum;
+	private Object roomName;
+	private String roomKing;
 	private String welcomeMessage;
 
 }

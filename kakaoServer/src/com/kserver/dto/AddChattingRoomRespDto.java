@@ -2,6 +2,8 @@ package com.kserver.dto;
 
 import java.util.List;
 
+import com.kserver.Room;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -9,6 +11,6 @@ import lombok.Data;
 @Data
 
 public class AddChattingRoomRespDto {
-	private List<String> chattingRooms;
+	private List<String> roomNames;
 
 }

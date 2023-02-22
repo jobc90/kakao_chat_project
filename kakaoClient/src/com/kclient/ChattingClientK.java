@@ -56,6 +56,8 @@ public class ChattingClientK extends JFrame {
 	private Gson gson;
 	private String username;
 	private String chattingRoomName;
+	private Object roomName;
+	private String user;
 
 	private JPanel mainPane;
 	private JList<String> userList;
@@ -70,6 +72,7 @@ public class ChattingClientK extends JFrame {
 	private JList chattingList;
 	private JTextField messageInput;
 	private JTextArea chattingView;
+	private JLabel roomLabel;
 
 	@Getter
 	private static CardLayout mainCard;
@@ -266,9 +269,10 @@ public class ChattingClientK extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount()==2) {
 					
-					int chattingRoomNum = chattingList.getSelectedIndex();
+					roomName = chattingList.getSelectedValue();
+					
 					JoinChattingReqDto joinChattingReqDto =
-							new JoinChattingReqDto(chattingRoomNum, username);
+							new JoinChattingReqDto(roomName);
 					
 					sendRequest("joinChatting", gson.toJson(joinChattingReqDto));
 					
@@ -287,13 +291,13 @@ public class ChattingClientK extends JFrame {
 		mainPane.add(chattingRoomPane, "chattingRoom");
 		chattingRoomPane.setLayout(null);
 		
-		JLabel chattingRoomName = new JLabel("채팅방 :");
-		chattingRoomName.setFont(new Font("D2Coding", Font.BOLD, 20));
-		chattingRoomName.setHorizontalAlignment(SwingConstants.LEFT);
-		chattingRoomName.setIcon(new ImageIcon(ChattingClientK.class.getResource("/com/kclient/images/카톡아이콘4.png")));
-		chattingRoomName.setBackground(new Color(255, 235, 59));
-		chattingRoomName.setBounds(0, 0, 394, 88);
-		chattingRoomPane.add(chattingRoomName);
+		roomLabel = new JLabel("채팅방 :");
+		roomLabel.setFont(new Font("D2Coding", Font.BOLD, 20));
+		roomLabel.setHorizontalAlignment(SwingConstants.LEFT);
+		roomLabel.setIcon(new ImageIcon(ChattingClientK.class.getResource("/com/kclient/images/카톡아이콘4.png")));
+		roomLabel.setBackground(new Color(255, 235, 59));
+		roomLabel.setBounds(0, 0, 394, 88);
+		chattingRoomPane.add(roomLabel);
 		
 		//채팅방에서 방 목록으로 나가는 버튼
 		JButton exitButton = new JButton("");
@@ -388,10 +392,7 @@ public class ChattingClientK extends JFrame {
 	private void sendMessage() {
 		if(!messageInput.getText().isBlank()) {
 			
-			String toUser = "all";
-			
-			
-			MessageReqDto messageReqDto = new MessageReqDto(toUser, username, messageInput.getText());
+			MessageReqDto messageReqDto = new MessageReqDto(username, messageInput.getText());
 				
 			sendRequest("sendMessage", gson.toJson(messageReqDto));
 			messageInput.setText("");

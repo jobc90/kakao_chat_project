@@ -6,8 +6,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Data
 public class MessageReqDto {
-	private String toUser;
-	private String fromUser;
+	private String username;
 	private String messageValue;
 
 }
