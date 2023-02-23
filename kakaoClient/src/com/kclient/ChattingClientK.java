@@ -33,6 +33,7 @@ import javax.swing.border.EmptyBorder;
 
 import com.google.gson.Gson;
 import com.kclient.dto.AddChattingRoomReqDto;
+import com.kclient.dto.ExitRoomReqDto;
 import com.kclient.dto.JoinChattingReqDto;
 import com.kclient.dto.JoinReqDto;
 import com.kclient.dto.MessageReqDto;
@@ -73,6 +74,7 @@ public class ChattingClientK extends JFrame {
 	private JTextField messageInput;
 	private JTextArea chattingView;
 	private JLabel roomLabel;
+	private JButton exitButton;
 
 	@Getter
 	private static CardLayout mainCard;
@@ -300,10 +302,18 @@ public class ChattingClientK extends JFrame {
 		chattingRoomPane.add(roomLabel);
 		
 		//채팅방에서 방 목록으로 나가는 버튼
-		JButton exitButton = new JButton("");
+		exitButton = new JButton("");
 		//채팅방에서 방 목록으로 나가는 버튼
 		exitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
+				ExitRoomReqDto exitRoomReqDto  = new ExitRoomReqDto(roomName, username);
+					
+					sendRequest("exitRoom", gson.toJson(exitRoomReqDto));
+					
+
+				
+				
 
 				
 				CardLayout layout = (CardLayout) mainPane.getLayout();

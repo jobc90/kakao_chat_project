@@ -15,7 +15,6 @@ public class Room {
     public Room(String chattingRoomName, String roomKing, ConnectedSocket joinSocket) {
         this.chattingRoomName = chattingRoomName;
         this.roomKing = roomKing;
-        joinSocketList.add(joinSocket);
     }
 
 }

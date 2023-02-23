@@ -1,12 +1,13 @@
 package com.kserver.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class MessageRespDto {
-	private Object roomName;
-	private String messageValue;
+public class ExitRoomRespDto {
+	private List<String> roomNames;
 
 }

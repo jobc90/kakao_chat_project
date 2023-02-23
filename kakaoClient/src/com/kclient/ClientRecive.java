@@ -9,6 +9,7 @@ import java.net.Socket;
 
 import com.google.gson.Gson;
 import com.kclient.dto.AddChattingRoomRespDto;
+import com.kclient.dto.ExitRoomRespDto;
 import com.kclient.dto.JoinChattingRespDto;
 import com.kclient.dto.JoinRespDto;
 import com.kclient.dto.MessageRespDto;
@@ -22,6 +23,8 @@ public class ClientRecive extends Thread {
 	private final Socket socket;
 	private InputStream inputStream;
 	private Gson gson;
+	private static Object currentRoom;
+	
 	
 	@Override
 	public void run() {
@@ -30,6 +33,7 @@ public class ClientRecive extends Thread {
 			BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
 			gson = new Gson();
 			CardLayout layout = ChattingClientK.getInstance().getMainCard();
+			
 			
 			
 			
@@ -57,14 +61,28 @@ public class ClientRecive extends Thread {
 						JoinChattingRespDto joinChattingRespDto = gson.fromJson(responseDto.getBody(), JoinChattingRespDto.class);
 						layout.show(ChattingClientK.getInstance().getMainPane(), "chattingRoom");
 						ChattingClientK.getInstance().getRoomLabel().setText("채팅방 :" + joinChattingRespDto.getRoomName() +", 방장: " + joinChattingRespDto.getRoomKing());
+						currentRoom = joinChattingRespDto.getRoomName();
 						ChattingClientK.getInstance().getChattingView().setText(null);
 						ChattingClientK.getInstance().getChattingView().append(joinChattingRespDto.getWelcomeMessage() + "\n");
 
 						break;
 						
+					case "exitRoom":
+						ExitRoomRespDto exitRoomRespDto = gson.fromJson(responseDto.getBody(), ExitRoomRespDto.class);
+						ChattingClientK.getInstance().getChattingListModel().clear();
+						ChattingClientK.getInstance().getChattingListModel().addElement("---<<<채팅방 목록>>>---");
+						ChattingClientK.getInstance().getChattingListModel().addAll(exitRoomRespDto.getRoomNames());
+						layout.show(ChattingClientK.getInstance().getMainPane(), "chattingList");
+						
 					case "sendMessage":
 						MessageRespDto messageRespDto = gson.fromJson(responseDto.getBody(), MessageRespDto.class);
-						ChattingClientK.getInstance().getChattingView().append(messageRespDto.getMessageValue() + "\n");
+						System.out.println(messageRespDto.getRoomName());
+						System.out.println(currentRoom);
+						System.out.println(messageRespDto.getMessageValue());
+						if (messageRespDto.getRoomName().equals(currentRoom)) {
+							ChattingClientK.getInstance().getChattingView().append(messageRespDto.getMessageValue() + "\n");
+						}
+						
 				}
 			}
 		} catch (IOException e) {
