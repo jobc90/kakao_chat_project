@@ -310,16 +310,6 @@ public class ChattingClientK extends JFrame {
 				ExitRoomReqDto exitRoomReqDto  = new ExitRoomReqDto(roomName, username);
 					
 					sendRequest("exitRoom", gson.toJson(exitRoomReqDto));
-					
-
-				
-				
-
-				
-				CardLayout layout = (CardLayout) mainPane.getLayout();
-		        layout.show(mainPane, "chattingList");
-
-
 			}
 		});
 		
