@@ -64,15 +64,18 @@ public class ClientRecive extends Thread {
 						currentRoom = joinChattingRespDto.getRoomName();
 						ChattingClientK.getInstance().getChattingView().setText(null);
 						ChattingClientK.getInstance().getChattingView().append(joinChattingRespDto.getWelcomeMessage() + "\n");
-
-						break;
 						
+						
+						break;
+
 					case "exitRoom":
 						ExitRoomRespDto exitRoomRespDto = gson.fromJson(responseDto.getBody(), ExitRoomRespDto.class);
+						System.out.println(currentRoom);
 						ChattingClientK.getInstance().getChattingListModel().clear();
 						ChattingClientK.getInstance().getChattingListModel().addElement("---<<<채팅방 목록>>>---");
 						ChattingClientK.getInstance().getChattingListModel().addAll(exitRoomRespDto.getRoomNames());
 						layout.show(ChattingClientK.getInstance().getMainPane(), "chattingList");
+						break;
 						
 					case "sendMessage":
 						MessageRespDto messageRespDto = gson.fromJson(responseDto.getBody(), MessageRespDto.class);
@@ -82,6 +85,7 @@ public class ClientRecive extends Thread {
 						if (messageRespDto.getRoomName().equals(currentRoom)) {
 							ChattingClientK.getInstance().getChattingView().append(messageRespDto.getMessageValue() + "\n");
 						}
+						break;
 						
 				}
 			}

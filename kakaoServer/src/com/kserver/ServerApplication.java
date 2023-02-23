@@ -119,6 +119,7 @@ class ConnectedSocket extends Thread {
 						for(Room room1 : roomList) {
 							if (room1.getChattingRoomName().equals(roomName)) {
 								roomKing = room1.getRoomKing();
+								break;
 							}	
 						}
 						JoinChattingRespDto joinChattingRespDto = new JoinChattingRespDto(roomName, roomKing, "채팅방에 입장하셨습니다.");
@@ -129,24 +130,10 @@ class ConnectedSocket extends Thread {
 						
 					case "exitRoom": 
 						ExitRoomReqDto exitRoomReqDto = gson.fromJson(requestDto.getBody(), ExitRoomReqDto.class);
-						roomName = exitRoomReqDto.getRoomName();
-						username = exitRoomReqDto.getUsername();
-						
-						System.out.println(roomList);
-						System.out.println(roomNames);
-						for(Room room3 : roomList) {
-							if (room3.getChattingRoomName().equals(roomName)) {
-								roomKing = room3.getRoomKing();
-								if (exitRoomReqDto.getUsername().equals(roomKing)) {
-									roomList.remove(room3);
-									roomNames.remove(room3.getChattingRoomName());
-								}
-							}	
-						}
+
 						
 						
-						
-						ExitRoomRespDto exitRoomRespDto = new ExitRoomRespDto(roomNames);
+						ExitRoomRespDto exitRoomRespDto = new ExitRoomRespDto(roomNames, exitRoomReqDto.getUsername());
 						exitRoom(requestDto.getResource(), "ok", gson.toJson(exitRoomRespDto));
 						
 						break;
@@ -202,16 +189,47 @@ class ConnectedSocket extends Thread {
 	        }
 	    }
 	}
+//	private void exitRoom(String resource, String status, String body) throws IOException {
+//		ResponseDto responseDto = new ResponseDto(resource, status, body);
+//		for (Room room4 : roomList) {
+//	        if (room4.getChattingRoomName().equals(roomName)) {
+//	        	System.out.println(room4.getChattingRoomName());
+//	        	System.out.println(roomName);
+//	        		for (ConnectedSocket connectedSocket : room4.getJoinSocketList()) {
+//	        			OutputStream outputStream = connectedSocket.getSocket().getOutputStream();
+//		        		PrintWriter out = new PrintWriter(outputStream, true);
+//		        		out.println(gson.toJson(responseDto));
+//	        		}
+//	        	
+//	        	
+//	        }
+//		}
+//		
+//	}
 	
 	private void exitRoom(String resource, String status, String body) throws IOException {
 		ResponseDto responseDto = new ResponseDto(resource, status, body);
-		for(ConnectedSocket connectedSocket : socketList) {
-			OutputStream outputStream = connectedSocket.getSocket().getOutputStream();
-			PrintWriter out = new PrintWriter(outputStream, true);
-			
-			out.println(gson.toJson(responseDto));
+		for (Room room4 : roomList) {
+	        if (room4.getChattingRoomName().equals(roomName)) {
+	        	if(room4.getRoomKing() != username) {
+	        		OutputStream outputStream = socket.getOutputStream();
+	        		PrintWriter out = new PrintWriter(outputStream, true);
+	        		out.println(gson.toJson(responseDto));
+	        		} else {
+	        			roomList.remove(room4);
+	        			roomNames.remove(room4.getChattingRoomName());
+	        			for (ConnectedSocket connectedSocket : room4.getJoinSocketList()) {
+	        				OutputStream outputStream = connectedSocket.getSocket().getOutputStream();
+	        				PrintWriter out = new PrintWriter(outputStream, true);
+	        				out.println(gson.toJson(responseDto));
+	        				}break;
+	        			}
+	        	} 
+	        }
 		}
-	}
+	
+		
+	
 	
 	private void sendMessage(String resource, String status, String body) throws IOException {
 	    ResponseDto responseDto = new ResponseDto(resource, status, body);
@@ -222,7 +240,7 @@ class ConnectedSocket extends Thread {
 	    			PrintWriter out = new PrintWriter(outputStream, true);
 	    			out.println(gson.toJson(responseDto));
 	    		}
-	    		
+	    		break;
 	    	}
 	    }
 

@@ -9,5 +9,6 @@ import lombok.Data;
 @Data
 public class ExitRoomRespDto {
 	private List<String> roomNames;
+	private String username;
 
 }
