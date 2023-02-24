@@ -5,7 +5,7 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class ExitRoomReqDto {
+public class RefreshReqDto {
 	Object roomName;
 
 }
