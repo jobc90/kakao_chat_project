@@ -13,6 +13,7 @@ import com.kclient.dto.ExitRoomRespDto;
 import com.kclient.dto.JoinChattingRespDto;
 import com.kclient.dto.JoinRespDto;
 import com.kclient.dto.MessageRespDto;
+import com.kclient.dto.RefreshRespDto;
 import com.kclient.dto.ResponseDto;
 
 import lombok.RequiredArgsConstructor;
@@ -69,19 +70,23 @@ public class ClientRecive extends Thread {
 						break;
 
 					case "exitRoom":
+
 						ExitRoomRespDto exitRoomRespDto = gson.fromJson(responseDto.getBody(), ExitRoomRespDto.class);
-						System.out.println(currentRoom);
+			            ChattingClientK.getInstance().getChattingListModel().clear();
+			            ChattingClientK.getInstance().getChattingListModel().addElement("---<<<채팅방 목록>>>---");
+			            ChattingClientK.getInstance().getChattingListModel().addAll(exitRoomRespDto.getRoomNames());
+			     
+			            layout.show(ChattingClientK.getInstance().getMainPane(), "chattingList");
+			            
+					case "refresh": 
+						RefreshRespDto refreshRespDto = gson.fromJson(responseDto.getBody(), RefreshRespDto.class);
 						ChattingClientK.getInstance().getChattingListModel().clear();
 						ChattingClientK.getInstance().getChattingListModel().addElement("---<<<채팅방 목록>>>---");
-						ChattingClientK.getInstance().getChattingListModel().addAll(exitRoomRespDto.getRoomNames());
-						layout.show(ChattingClientK.getInstance().getMainPane(), "chattingList");
+						ChattingClientK.getInstance().getChattingListModel().addAll(refreshRespDto.getRoomNames());
 						break;
-						
+
 					case "sendMessage":
 						MessageRespDto messageRespDto = gson.fromJson(responseDto.getBody(), MessageRespDto.class);
-						System.out.println(messageRespDto.getRoomName());
-						System.out.println(currentRoom);
-						System.out.println(messageRespDto.getMessageValue());
 						if (messageRespDto.getRoomName().equals(currentRoom)) {
 							ChattingClientK.getInstance().getChattingView().append(messageRespDto.getMessageValue() + "\n");
 						}

@@ -307,9 +307,13 @@ public class ChattingClientK extends JFrame {
 		exitButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				ExitRoomReqDto exitRoomReqDto  = new ExitRoomReqDto(roomName, username);
+				ExitRoomReqDto exitRoomReqDto  = new ExitRoomReqDto(roomName);
 					
 					sendRequest("exitRoom", gson.toJson(exitRoomReqDto));
+					
+				ExitRoomReqDto refreshReqDto  = new ExitRoomReqDto(roomName);
+					
+				sendRequest("refresh", gson.toJson(refreshReqDto));
 			}
 		});
 		

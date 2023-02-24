@@ -1,4 +1,4 @@
-package com.kserver.dto;
+package com.kclient.dto;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-public class ExitRoomRespDto {
+public class RefreshRespDto {
 	private List<String> roomNames;
 
 }
